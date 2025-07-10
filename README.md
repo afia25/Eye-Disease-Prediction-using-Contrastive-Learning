@@ -151,11 +151,23 @@ history = model.fit(
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 decoder
 
+
 1.
+In mobilenet autoencoder:
 x = layers.Dense(64, activation='relu')(model.output)
 classification_output = layers.Dense(5, activation='softmax')(x)
 ###final_model = Model(inputs=mobilenet.input, outputs=final_output)
+
 encoder_model = Model(inputs=mobilenet.input, outputs=x)   # outputs=previous layer of classification_output. classification_output baad jabe
+decoder = Model(inputs=encoder_model.input, outputs=decoder_output, name='Decoder')
+autoencoder_output = decoder(encoder_model.input)
+final_model = Model(inputs=encoder_model.input, outputs=[classification_output, autoencoder_output])
+
+
+In conv VIT autoencoder u have done this:
+model = Model(inputs=inputs, outputs=[classification_output, decoder_output])
+
+according to chatgpt, these two r same.
 
 
 2.
