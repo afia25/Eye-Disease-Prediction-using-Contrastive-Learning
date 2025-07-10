@@ -58,7 +58,64 @@ ans: Yes if you're using a pretrained ConvNeXt model, Use AutoImageProcessor to 
 Show that using the contrastive learning pretrained weights as initialization gives better accuracy than using ImageNet pretrained weights.
 
 
-ask chatgpt how to add cnn decoder after convvit encoder. go to this file and add a decoder = https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=-h0C3iwBDWkV
+ask chatgpt how to add cnn decoder after convvit encoder. 
+go to this file and add a decoder = https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=-h0C3iwBDWkV
 check autoencoder codes from KID = 1, 2.
+
+
+###################################################################################################################################################################
+
+
+
+import tensorflow as tf
+from tensorflow.keras import layers, Input, Model
+from tensorflow.keras.optimizers import Adam
+
+
+# Downstream encoder - using pretraining_model.encoder for feature extraction
+class ConvNeXtEncoder(tf.keras.Model):
+    def __init__(self, pretraining_encoder, **kwargs):
+        super(ConvNeXtEncoder, self).__init__(**kwargs)
+        self.encoder = pretraining_encoder  # Use pretraining_model.encoder
+
+    def call(self, inputs):
+        # Ensure inputs have the shape (B, H, W, C)
+        pixel_values = tf.transpose(inputs, perm=[0, 1, 2, 3])  # (B, 3, 224, 224)
+        outputs = self.encoder(pixel_values)
+
+        # Debugging: check if `outputs` contains 'pooler_output' or 'last_hidden_state'
+        if isinstance(outputs, dict):
+            if 'pooler_output' in outputs:
+                pooled_output = outputs['pooler_output']  # shape: (B, hidden_dim) # Use pooler_output instead of last_hidden_state
+            else:
+                pooled_output = outputs['last_hidden_state']  # use last_hidden_state if pooler_output is not available
+        else:
+            pooled_output = outputs  # assuming outputs is already the desired tensor
+
+        return pooled_output
+
+# Input layer
+inputs = Input(shape=(224, 224, 3), name='pixel_values')
+
+
+encoder = ConvNeXtEncoder(pretraining_encoder=pretraining_model.encoder)
+features = encoder(inputs)
+
+# Projection head (same as contrastive pretext head)
+x = layers.Dense(128, activation='relu')(features)
+x = layers.Dropout(0.2)(x)
+outputs = layers.Dense(5, activation='softmax')(x)
+
+model = Model(inputs=inputs, outputs=outputs)
+model.compile(optimizer=tf.keras.optimizers.Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(labeled_train_dataset, epochs=10, validation_data=val_dataset)
+
+
+
+
+
+
+I want to add a cnn decoder after convolutional VIT encoder. above is the code of convolutional VIT encoder. u have to add a  cnn decoder after it.
+
 
 
