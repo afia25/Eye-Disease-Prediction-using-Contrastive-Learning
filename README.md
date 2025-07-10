@@ -51,7 +51,6 @@ selected wgh = convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
 
 
 
-
 ## Is it important to use image_processor(images, return_tensors="tf")["pixel_values"] for ConvNeXt? 
 ans: Yes if you're using a pretrained ConvNeXt model, Use AutoImageProcessor to preprocess the image. bcs Hugging Face vision models like ConvNeXt are trained with very specific image preprocessing steps. image_processor will do ((x / 255) - mean) / std. If you're using image_processor, do not divide by 255 yourself. Let HuggingFace handle it by AutoImageProcessor. U DO NOT need AutoImageProcessor if you're using randomly initialized ConvNeXt (no wgh). 
  
