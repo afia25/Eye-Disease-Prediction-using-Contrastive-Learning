@@ -63,92 +63,9 @@ go to this file and add a decoder = https://colab.research.google.com/drive/1Q-Y
 check autoencoder codes from KID = 1, 2.
 
 
-###################################################################################################################################################################
-
-## convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
-## unfrozen (trainable)
-import tensorflow as tf
-from tensorflow.keras import layers, Input, Model
-from tensorflow.keras.optimizers import Adam
+###############################################################################################################################################
 
 
-# Downstream encoder - using pretraining_model.encoder for feature extraction
-class ConvNeXtEncoder(tf.keras.Model):
-    def __init__(self, pretraining_encoder, **kwargs):
-        super(ConvNeXtEncoder, self).__init__(**kwargs)
-        self.encoder = pretraining_encoder  # Use pretraining_model.encoder
-
-    def call(self, inputs):
-        # Ensure inputs have the shape (B, H, W, C)
-        pixel_values = tf.transpose(inputs, perm=[0, 1, 2, 3])  # (B, 3, 224, 224)
-        outputs = self.encoder(pixel_values)
-
-        if isinstance(outputs, dict):
-            if 'pooler_output' in outputs:
-                return outputs['pooler_output']  # Shape: (B, hidden_dim)
-            elif 'last_hidden_state' in outputs:
-                return tf.reduce_mean(outputs['last_hidden_state'], axis=1)  # Mean pooling
-        return outputs  # fallback
-
-
-# Input layer
-inputs = Input(shape=(224, 224, 3), name='pixel_values')
-
-# Encoder
-encoder = ConvNeXtEncoder(pretraining_encoder=pretraining_model.encoder)
-features = encoder(inputs)  # shape: (B, hidden_dim)
-
-# --- Classification Head ---
-x_cls = layers.Dense(128, activation='relu')(features)
-x_cls = layers.Dropout(0.2)(x_cls)
-classification_output = layers.Dense(5, activation='softmax', name='classification_output')(x_cls)
-
-# --- Decoder Head ---
-# Project feature vector to a feature map
-x = layers.Dense(7 * 7 * 128, activation='relu')(features)  # You can change this size as needed
-x = layers.Reshape((7, 7, 128))(x)
-
-x = layers.UpSampling2D((2, 2))(x)  # 7x7 → 14x14
-x = layers.Conv2DTranspose(128, (3, 3), activation='relu', padding='same')(x)
-
-x = layers.UpSampling2D((2, 2))(x)  # 14x14 → 28x28
-x = layers.Conv2DTranspose(64, (3, 3), activation='relu', padding='same')(x)
-
-x = layers.UpSampling2D((2, 2))(x)  # 28x28 → 56x56
-x = layers.Conv2DTranspose(32, (3, 3), activation='relu', padding='same')(x)
-
-x = layers.UpSampling2D((2, 2))(x)  # 56x56 → 112x112
-x = layers.Conv2DTranspose(16, (3, 3), activation='relu', padding='same')(x)
-
-x = layers.UpSampling2D((2, 2))(x)  # 112x112 → 224x224
-decoder_output = layers.Conv2DTranspose(3, (3, 3), activation='sigmoid', padding='same', name='reconstruction_output')(x)
-
-# Final model
-model = Model(inputs=inputs, outputs=[classification_output, decoder_output])
-
-# Compile model
-model.compile(
-    optimizer=Adam(),
-    loss={
-        'classification_output': 'categorical_crossentropy',
-        'reconstruction_output': 'mse'
-    },
-    metrics={
-        'classification_output': 'accuracy',
-        'reconstruction_output': 'mse'
-    }
-)
-
-# Train
-history = model.fit(
-    labeled_train_dataset,
-    epochs=10,
-    validation_data=val_dataset
-)
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 decoder
 
 
