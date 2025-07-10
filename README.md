@@ -115,7 +115,10 @@ history = model.fit(labeled_train_dataset, epochs=10, validation_data=val_datase
 
 
 
-I want to add a cnn decoder after convolutional VIT encoder. above is the code of convolutional VIT encoder. u have to add a  cnn decoder after it.
+I want to add a cnn decoder after convolutional VIT encoder. 
+above is the code of convolutional VIT encoder. 
+u have to add a  cnn decoder after it. 
+for doing both classification and reconstruction.
 
 
 
