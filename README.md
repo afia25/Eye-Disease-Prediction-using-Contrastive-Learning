@@ -47,6 +47,7 @@ batch 80 =  https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe1f
 batch 150 = https://colab.research.google.com/drive/1odw0Rf-U7GBcUXgN1hYJX6TBuzRkx_Mg?authuser=2#scrollTo=lrCTJDIf9jgw
 batch 200 = https://colab.research.google.com/drive/1heJ1edhzizQKvBz49nkOPUndl7WS3g_6?authuser=5#scrollTo=HLjhKoPuqLL1 
 
+autoencoder = https://colab.research.google.com/drive/1R_m8jjlshCh_ISBwzGD_GQjgQNMT9wD7?authuser=7#scrollTo=3NH1M35PFkcr
 selected wgh = convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
 
 
@@ -56,55 +57,12 @@ ans: Yes if you're using a pretrained ConvNeXt model, Use AutoImageProcessor to 
  
 =========================================================================================================================================================================
 Show that using the contrastive learning pretrained weights as initialization gives better accuracy than using ImageNet pretrained weights.
-
-
-ask chatgpt how to add cnn decoder after convvit encoder. 
-go to this file and add a decoder = https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=-h0C3iwBDWkV
 check autoencoder codes from KID = 1, 2.
 
 
-###############################################################################################################################################
 
 
-decoder
 
-
-1.
-In mobilenet autoencoder:
-x = layers.Dense(64, activation='relu')(model.output)
-classification_output = layers.Dense(5, activation='softmax')(x)
-###final_model = Model(inputs=mobilenet.input, outputs=final_output)
-
-encoder_model = Model(inputs=mobilenet.input, outputs=x)   # outputs=previous layer of classification_output. classification_output baad jabe
-decoder = Model(inputs=encoder_model.input, outputs=decoder_output, name='Decoder')
-autoencoder_output = decoder(encoder_model.input)
-final_model = Model(inputs=encoder_model.input, outputs=[classification_output, autoencoder_output])
-
-
-In conv VIT autoencoder u have done this:
-model = Model(inputs=inputs, outputs=[classification_output, decoder_output])
-
-according to chatgpt, these two r same.
-
-
-2.
-x = layers.Dense(64, activation='relu')(model.output)
-classification_output = layers.Dense(5, activation='softmax')(x)
-encoder_model = Model(inputs=mobilenet.input, outputs=x)  # → decoder input comes from Dense(64)
-decoder input comes after Dense(64) — i.e., the shared encoder ends just before classification.
-features = encoder(inputs)  # direct encoder output (from pretraining_model.encoder)
-x_cls = layers.Dense(128, activation='relu')(features)
-x_cls = layers.Dropout(0.2)(x_cls)
-classification_output = layers.Dense(5, activation='softmax')(x_cls)
-# decoder input:
-x = layers.Dense(7 * 7 * 128, activation='relu')(features)  # not from Dense(128)
-The decoder input comes directly from the encoder, not from the intermediate Dense(128) or Dense(64) layer.
-
-
-You can definitely change this line in the ConvNeXt code:
-x = layers.Dense(7 * 7 * 128, activation='relu')(features)
-→ to:
-x = layers.Dense(7 * 7 * 128, activation='relu')(x_cls)  # or after Dropout
 
 
 3. dropout baad dile acc increase hote pare.
