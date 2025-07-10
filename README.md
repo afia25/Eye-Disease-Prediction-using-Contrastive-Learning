@@ -59,6 +59,6 @@ Show that using the contrastive learning pretrained weights as initialization gi
 
 
 ask chatgpt how to add cnn decoder after convvit encoder. go to this file and add a decoder = https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=-h0C3iwBDWkV
-check autoencoder codes.
+check autoencoder codes from KID = 1, 2.
 
 
