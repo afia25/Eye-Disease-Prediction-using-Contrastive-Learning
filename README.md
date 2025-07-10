@@ -65,8 +65,8 @@ check autoencoder codes from KID = 1, 2.
 
 ###################################################################################################################################################################
 
-
-
+## convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
+## unfrozen (trainable)
 import tensorflow as tf
 from tensorflow.keras import layers, Input, Model
 from tensorflow.keras.optimizers import Adam
@@ -83,42 +83,69 @@ class ConvNeXtEncoder(tf.keras.Model):
         pixel_values = tf.transpose(inputs, perm=[0, 1, 2, 3])  # (B, 3, 224, 224)
         outputs = self.encoder(pixel_values)
 
-        # Debugging: check if `outputs` contains 'pooler_output' or 'last_hidden_state'
         if isinstance(outputs, dict):
             if 'pooler_output' in outputs:
-                pooled_output = outputs['pooler_output']  # shape: (B, hidden_dim) # Use pooler_output instead of last_hidden_state
-            else:
-                pooled_output = outputs['last_hidden_state']  # use last_hidden_state if pooler_output is not available
-        else:
-            pooled_output = outputs  # assuming outputs is already the desired tensor
+                return outputs['pooler_output']  # Shape: (B, hidden_dim)
+            elif 'last_hidden_state' in outputs:
+                return tf.reduce_mean(outputs['last_hidden_state'], axis=1)  # Mean pooling
+        return outputs  # fallback
 
-        return pooled_output
 
 # Input layer
 inputs = Input(shape=(224, 224, 3), name='pixel_values')
 
-
+# Encoder
 encoder = ConvNeXtEncoder(pretraining_encoder=pretraining_model.encoder)
-features = encoder(inputs)
+features = encoder(inputs)  # shape: (B, hidden_dim)
 
-# Projection head (same as contrastive pretext head)
-x = layers.Dense(128, activation='relu')(features)
-x = layers.Dropout(0.2)(x)
-outputs = layers.Dense(5, activation='softmax')(x)
+# --- Classification Head ---
+x_cls = layers.Dense(128, activation='relu')(features)
+x_cls = layers.Dropout(0.2)(x_cls)
+classification_output = layers.Dense(5, activation='softmax', name='classification_output')(x_cls)
 
-model = Model(inputs=inputs, outputs=outputs)
-model.compile(optimizer=tf.keras.optimizers.Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
-history = model.fit(labeled_train_dataset, epochs=10, validation_data=val_dataset)
+# --- Decoder Head ---
+# Project feature vector to a feature map
+x = layers.Dense(7 * 7 * 128, activation='relu')(features)  # You can change this size as needed
+x = layers.Reshape((7, 7, 128))(x)
 
+x = layers.UpSampling2D((2, 2))(x)  # 7x7 → 14x14
+x = layers.Conv2DTranspose(128, (3, 3), activation='relu', padding='same')(x)
 
+x = layers.UpSampling2D((2, 2))(x)  # 14x14 → 28x28
+x = layers.Conv2DTranspose(64, (3, 3), activation='relu', padding='same')(x)
 
+x = layers.UpSampling2D((2, 2))(x)  # 28x28 → 56x56
+x = layers.Conv2DTranspose(32, (3, 3), activation='relu', padding='same')(x)
 
+x = layers.UpSampling2D((2, 2))(x)  # 56x56 → 112x112
+x = layers.Conv2DTranspose(16, (3, 3), activation='relu', padding='same')(x)
 
+x = layers.UpSampling2D((2, 2))(x)  # 112x112 → 224x224
+decoder_output = layers.Conv2DTranspose(3, (3, 3), activation='sigmoid', padding='same', name='reconstruction_output')(x)
 
-I want to add a cnn decoder after convolutional VIT encoder. 
-above is the code of convolutional VIT encoder. 
-u have to add a  cnn decoder after it. 
-for doing both classification and reconstruction.
+# Final model
+model = Model(inputs=inputs, outputs=[classification_output, decoder_output])
+
+# Compile model
+model.compile(
+    optimizer=Adam(),
+    loss={
+        'classification_output': 'categorical_crossentropy',
+        'reconstruction_output': 'mse'
+    },
+    metrics={
+        'classification_output': 'accuracy',
+        'reconstruction_output': 'mse'
+    }
+)
+
+# Train
+history = model.fit(
+    labeled_train_dataset,
+    epochs=10,
+    validation_data=val_dataset
+)
+
 
 
 
