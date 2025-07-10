@@ -148,4 +148,16 @@ history = model.fit(
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+decoder
+
+
+
+x = layers.Dense(64, activation='relu')(model.output)
+classification_output = layers.Dense(5, activation='softmax')(x)
+###final_model = Model(inputs=mobilenet.input, outputs=final_output)
+encoder_model = Model(inputs=mobilenet.input, outputs=x)   # outputs=previous layer of classification_output. classification_output baad jabe
+
+
+
 
