@@ -1,3 +1,70 @@
-model.compile(optimizer=Adam(), loss=['categorical_crossentropy', 'mse'], metrics=['accuracy', 'mse'])
 
-give loss_weights here. prioritizre classification. Im doing classification of img and image reconstruction.
+def load_datasets():
+    steps_per_epoch = (DATASET_UNLABELED_SIZE + DATASET_LABELED_SIZE) // BATCH_SIZE
+    unlabeled_batch_size = DATASET_UNLABELED_SIZE // steps_per_epoch
+    unlabeled_batch_size=50
+    labeled_batch_size = DATASET_LABELED_SIZE // steps_per_epoch
+    labeled_batch_size=16
+    print(f"Batch size: {unlabeled_batch_size} (unlabeled) + {labeled_batch_size} (labeled)")
+
+
+    labeled_train_dataset = (
+        tf.keras.utils.image_dataset_from_directory(
+            directory='/content/drive/MyDrive/TS_research2_eye/mydata/eye_data_labeled/train',
+            labels='inferred',
+            label_mode='int',
+            batch_size=32,
+            image_size=IMAGE_SIZE
+        )
+        .prefetch(buffer_size=tf.data.AUTOTUNE)
+    )
+
+    val_dataset = (
+        tf.keras.utils.image_dataset_from_directory(
+            directory='/content/drive/MyDrive/TS_research2_eye/mydata/eye_data_labeled/validation',
+            labels='inferred',
+            label_mode='int',
+            batch_size=32,
+            image_size=IMAGE_SIZE
+        )
+        .prefetch(buffer_size=tf.data.AUTOTUNE)
+    )
+
+    return labeled_train_dataset, val_dataset
+
+
+# Load dataset
+labeled_train_dataset, val_dataset = load_datasets()
+
+print(labeled_train_dataset)
+print(val_dataset)
+
+
+
+
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras.utils import to_categorical
+
+# Normalize and one-hot encode labels
+def process(image, label):
+    image = tf.cast(image / 255. , tf.float32)
+    label = tf.cast(label, tf.int32)
+
+    # One-hot encode labels
+    label_one_hot = tf.one_hot(label, 5)  # 5 classes
+    print(label_one_hot.shape)
+    print(repr(label_one_hot))
+    print(label_one_hot)
+    return image, label_one_hot
+
+
+labeled_train_dataset = labeled_train_dataset.map(process)
+val_dataset = val_dataset.map(process)
+
+
+
+
+
+
+write code to do label smoothing for this dataset.
