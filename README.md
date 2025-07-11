@@ -41,7 +41,7 @@ good result = https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe
 
 batch code
 batch 20 =  https://colab.research.google.com/drive/1dQUXM_vEgmueyAtERPLNuCZ0W2wSpYi3?authuser=7#scrollTo=HLjhKoPuqLL1
-batch 50 =  https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=9evidRponMWB  (K id 10)
+batch 50 =  https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=9evidRponMWB  (K id 10. main code)
 batch 50 =  https://colab.research.google.com/drive/1tb5L7-zUihhb5K8R5WOOPF3semPlsg5O?authuser=5#scrollTo=HLjhKoPuqLL1  (K id 10)
 batch 80 =  https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe1fCV3kx?authuser=2#scrollTo=HLjhKoPuqLL1
 batch 150 = https://colab.research.google.com/drive/1odw0Rf-U7GBcUXgN1hYJX6TBuzRkx_Mg?authuser=2#scrollTo=lrCTJDIf9jgw
