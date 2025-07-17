@@ -53,3 +53,97 @@ history = model.fit(labeled_train_dataset, epochs=10, validation_data=val_datase
 
 I do NOT want to use only the last layer output of convViT. I nned to "concatenate" outputs from early, mid and last layers. 
 u need to write code for that.
+
+
+
+
+
+
+==========================================================================================================================================
+my pretraining_model.encoder  is like this::
+
+
+class ConvNeXtEncoder(tf.keras.Model):
+    def __init__(self, model_name="facebook/convnextv2-tiny-22k-224", **kwargs):     # using pretrained model in pretext task
+        super(ConvNeXtEncoder, self).__init__(**kwargs)
+        self.image_processor = AutoImageProcessor.from_pretrained(model_name)    #AutoImageProcessor is not really being used
+        self.convnext = TFAutoModel.from_pretrained(model_name)
+
+    def call(self, inputs):
+        # Convert NHWC (TensorFlow default) to NCHW (what HuggingFace expects)
+        pixel_values = tf.transpose(inputs, perm=[0, 3, 1, 2])  # (B, 3, 224, 224)
+        outputs = self.convnext({'pixel_values': pixel_values})
+        pooled_output = outputs['pooler_output']     # Use pooler_output instead of last_hidden_state
+        return pooled_output
+
+
+@register_keras_serializable()
+class ContrastiveModel(keras.Model):
+    def __init__(
+        self,
+        temperature=0.1,
+        dataset_unlabeled_size=50000,
+        dataset_labeled_size=5000,
+        image_size=224,
+        image_channels=3,
+        epochs=10,
+        batch_size=50,
+        width=128,
+        aug_contrastive=None,
+        aug_classification=None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self.temperature = temperature
+        self.dataset_unlabeled_size = dataset_unlabeled_size
+        self.dataset_labeled_size = dataset_labeled_size
+        self.image_size = image_size
+        self.image_channels = image_channels
+        self.epochs = epochs
+        self.batch_size = batch_size
+        self.width = width
+
+        # Default augmentations if not provided
+        self.aug_contrastive = aug_contrastive or {
+            "min_area": 0.25,
+            "brightness": 0.6,
+            "jitter": 0.2,
+        }
+        self.aug_classification = aug_classification or {
+            "min_area": 0.75,
+            "brightness": 0.3,
+            "jitter": 0.1,
+        }
+
+        self.contrastive_augmenter = self.get_augmenter(**self.aug_contrastive)
+        self.classification_augmenter = self.get_augmenter(**self.aug_classification)
+        self.encoder = self.get_encoder()
+
+        # Non-linear MLP as projection head
+        self.projection_head = keras.Sequential(
+            [
+                keras.Input(shape=(self.width,)),
+                layers.Dense(self.width, activation="relu"),
+                layers.Dense(self.width, activation="relu"),
+                layers.Dense(self.width),
+            ],
+            name="Project_Head",
+        )
+
+        # Single dense layer for linear probing
+        self.linear_probe = keras.Sequential(
+            [layers.Input(shape=(self.width,)), layers.Dense(5)], name="linear_probe"     ################################### nmbr of classes
+        )
+
+
+    # pretext encoder model
+    def get_encoder(self):
+        inputs = Input(shape=(224, 224, 3), name='pixel_values')
+        convnext_encoder = ConvNeXtEncoder()
+        features = convnext_encoder(inputs)
+        x = layers.Dense(128, activation='relu')(features)  # output shape (None, 128)
+        encoder_model = Model(inputs=inputs, outputs=x)
+        return encoder_model
+
+
+        
