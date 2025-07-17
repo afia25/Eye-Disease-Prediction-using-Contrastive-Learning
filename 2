@@ -1,0 +1,75 @@
+### fcn
+
+
+
+pretrained_model = MobileNetV2(include_top=False, input_shape=(224, 224, 3), pooling='max', weights='imagenet')
+# FCN  layers
+ftr = pretrained_model.layers[-2].output
+x = layers.Conv2D(512, (3, 3), activation='relu', padding='same')(ftr)
+ftr1 = layers.UpSampling2D(size=(8, 8))(x)
+x = layers.Conv2D(256, (3, 3), activation='relu', padding='same')(ftr)
+ftr2 = layers.UpSampling2D(size=(8, 8))(x)
+x = layers.Conv2D(128, (3, 3), activation='relu', padding='same')(ftr)
+ftr3 = layers.UpSampling2D(size=(8, 8))(x)
+x = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(ftr)
+ftr4 = layers.UpSampling2D(size=(8, 8))(x)
+x = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(ftr)
+ftr5 = layers.UpSampling2D(size=(8, 8))(x)
+
+merged_blocks = layers.concatenate([ftr1, ftr2, ftr3, ftr4, ftr5])
+gap_fcn = layers.GlobalMaxPooling2D()(merged_blocks)
+feature_extractor_model = Model(inputs=pretrained_model.input, outputs=gap_fcn)
+
+
+
+
+
+the above code shows FCN is added after MobileNetV2. 
+write code to add FCN in the above way after convVIT. 
+convVIT code is givenn below.
+
+
+
+
+## convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
+## unfrozen (trainable)
+import tensorflow as tf
+from tensorflow.keras import layers, Input, Model
+from tensorflow.keras.optimizers import Adam
+# Downstream encoder - using pretraining_model.encoder for feature extraction
+
+
+class ConvNeXtEncoder(tf.keras.Model):
+    def __init__(self, pretraining_encoder, **kwargs):
+        super(ConvNeXtEncoder, self).__init__(**kwargs)
+        self.encoder = pretraining_encoder  # Use pretraining_model.encoder
+
+    def call(self, inputs):
+        # Ensure inputs have the shape (B, H, W, C)
+        pixel_values = tf.transpose(inputs, perm=[0, 1, 2, 3])  # (B, 3, 224, 224)
+        outputs = self.encoder(pixel_values)
+
+        # Debugging: check if `outputs` contains 'pooler_output' or 'last_hidden_state'
+        if isinstance(outputs, dict):
+            if 'pooler_output' in outputs:
+                pooled_output = outputs['pooler_output']  # shape: (B, hidden_dim) # Use pooler_output instead of last_hidden_state
+            else:
+                pooled_output = outputs['last_hidden_state']  # use last_hidden_state if pooler_output is not available
+        else:
+            pooled_output = outputs  # assuming outputs is already the desired tensor
+
+        return pooled_output
+
+
+inputs = Input(shape=(224, 224, 3), name='pixel_values')
+encoder = ConvNeXtEncoder(pretraining_encoder=pretraining_model.encoder)
+features = encoder(inputs)
+
+# Projection head (same as contrastive pretext head)
+x = layers.Dense(128, activation='relu')(features)
+x = layers.Dropout(0.2)(x)
+outputs = layers.Dense(5, activation='softmax')(x)
+
+model = Model(inputs=inputs, outputs=outputs)
+model.compile(optimizer=tf.keras.optimizers.Adam(), loss='categorical_crossentropy', metrics=['accuracy'])
+history = model.fit(labeled_train_dataset, epochs=10, validation_data=val_dataset)
