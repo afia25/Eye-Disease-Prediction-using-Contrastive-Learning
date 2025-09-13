@@ -25,11 +25,6 @@ jei attention code gular acc valo ashbe (0.95) shei attention code guloke furthe
 
 =========================================================================================================================================================================
 
-give a moderate length of answer. not too long. not too short.
-
-convVIT_tiny_pretext_manual_imageprocessor_batch_80_ep_10.keras
-
-
 
 https://colab.research.google.com/drive/1JTKKMq0T228qE-woy7i54PVoBkbZhh1j?authuser=5#scrollTo=HLjhKoPuqLL1
 https://colab.research.google.com/drive/13CS7-MCucxl4RAu9yT_7RJy8j9AOwO9L?authuser=2#scrollTo=HLjhKoPuqLL1
