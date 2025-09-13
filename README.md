@@ -54,7 +54,7 @@ batch 200 = https://colab.research.google.com/drive/1heJ1edhzizQKvBz49nkOPUndl7W
 
 
 
-autoencoder = https://colab.research.google.com/drive/1R_m8jjlshCh_ISBwzGD_GQjgQNMT9wD7?authuser=7#scrollTo=3NH1M35PFkcr
+autoencoder = https://colab.research.google.com/drive/1R_m8jjlshCh_ISBwzGD_GQjgQNMT9wD7?authuser=3#scrollTo=HLjhKoPuqLL1 = convVIT_tiny_pretext_batch_50_down_autoencoder
 selected wgh = convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
 conv VIT + CL improve acc
 
