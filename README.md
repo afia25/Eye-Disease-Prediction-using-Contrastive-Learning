@@ -29,22 +29,36 @@ jei attention code gular acc valo ashbe (0.95) shei attention code guloke furthe
 https://colab.research.google.com/drive/1JTKKMq0T228qE-woy7i54PVoBkbZhh1j?authuser=5#scrollTo=HLjhKoPuqLL1
 https://colab.research.google.com/drive/13CS7-MCucxl4RAu9yT_7RJy8j9AOwO9L?authuser=2#scrollTo=HLjhKoPuqLL1
 https://colab.research.google.com/drive/1TP5uagB-OvHmlELhJ4rAFyGxnhzOjfPg?authuser=5#scrollTo=HLjhKoPuqLL1
-good result = https://colab.research.google.com/drive/1ZrBSAWvt6g8CfbJ3YcK1_004TW-9I6SM?authuser=5#scrollTo=HLjhKoPuqLL1  (not imp)
-good result = https://colab.research.google.com/drive/1--5KCdbQoYzQJUdjlnt5lAQvWX4i2Zi0?authuser=5
-good result = https://colab.research.google.com/drive/14dpN8kbqbk3L2ld4yYNU9yEY8xJsyLni?authuser=5#scrollTo=Pz8PorqG6uLj
-good result = https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe1fCV3kx?authuser=2#scrollTo=Pz8PorqG6uLj
+
+good result = https://colab.research.google.com/drive/1ZrBSAWvt6g8CfbJ3YcK1_004TW-9I6SM?authuser=4#scrollTo=I8Y32GYT2vGs  (not imp) 
+            = convVIT_tiny_pretext_batch_80 (NO imageprocessor in pretext. pixel 0-255)
+good result = https://colab.research.google.com/drive/1--5KCdbQoYzQJUdjlnt5lAQvWX4i2Zi0?authuser=4
+            = (0.9040) Convolutional ViT tiny_imagenet wgh
+good result = https://colab.research.google.com/drive/14dpN8kbqbk3L2ld4yYNU9yEY8xJsyLni?authuser=4
+            = convVITtiny_pretext_batch_80_down (NO imageprocessor used in pretext or down. pretext pixel 0-255. down pixel 0-1)
+good result = https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe1fCV3kx?authuser=5#scrollTo=HLjhKoPuqLL1
+            = convVIT_tiny_pretext_batch_80 (manual imageprocessor in pretext+no imageprocessor in down)
+
+
 
 batch code
 batch 20 =  https://colab.research.google.com/drive/1dQUXM_vEgmueyAtERPLNuCZ0W2wSpYi3?authuser=7#scrollTo=HLjhKoPuqLL1
 batch 50 =  https://colab.research.google.com/drive/1Q-YKWXtR-OYxV_98mmE-IDvunqRXeD0e?authuser=5#scrollTo=9evidRponMWB  (K id 10. main code)
+         =  convVIT_tiny_pretext_batch_50_down_fineTuning
 batch 50 =  https://colab.research.google.com/drive/1tb5L7-zUihhb5K8R5WOOPF3semPlsg5O?authuser=5#scrollTo=HLjhKoPuqLL1  (K id 10)
+         =  Final_convVIT_tiny_pretext_batch_50 (manual imageprocessor in pretext + NO imageprocessor in down)
 batch 80 =  https://colab.research.google.com/drive/15DJec4BE6r4pke5QhWq6tjhEe1fCV3kx?authuser=2#scrollTo=HLjhKoPuqLL1
 batch 150 = https://colab.research.google.com/drive/1odw0Rf-U7GBcUXgN1hYJX6TBuzRkx_Mg?authuser=2#scrollTo=lrCTJDIf9jgw
 batch 200 = https://colab.research.google.com/drive/1heJ1edhzizQKvBz49nkOPUndl7WS3g_6?authuser=5#scrollTo=HLjhKoPuqLL1 
 
+
+
+
 autoencoder = https://colab.research.google.com/drive/1R_m8jjlshCh_ISBwzGD_GQjgQNMT9wD7?authuser=7#scrollTo=3NH1M35PFkcr
 selected wgh = convVIT_tiny_pretext_manual_imageprocessor_batch_50_ep_70.keras
 conv VIT + CL improve acc
+
+
 
 
 ## Is it important to use image_processor(images, return_tensors="tf")["pixel_values"] for ConvNeXt? 
@@ -54,13 +68,7 @@ ans: Yes if you're using a pretrained ConvNeXt model, Use AutoImageProcessor to 
 Show that using the contrastive learning pretrained weights as initialization gives better accuracy than using ImageNet pretrained weights.
 check autoencoder codes from KID = 1, 2.
 
-
-
-
-
-
-
-3. dropout baad dile acc increase hote pare.
+dropout baad dile acc increase hote pare.
 
 
 
