@@ -1,6 +1,6 @@
 # Eye-Disease-Prediction-using-Contrastive-Learning
 
-while adding GNN, why extractiong train features for only one epoch? while we usually extract ftr for 10 epochs.
+while adding GNN, why extractiong train features for only one epoch? while we usually extract feature for 10 epochs.
 
 
 
