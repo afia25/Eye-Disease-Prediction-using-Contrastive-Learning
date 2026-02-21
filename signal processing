@@ -1,5 +1,8 @@
-UCI links
+signal to img links
 
+
+In transfer_learning.py script, they converted EEG signals into spectrogram images and trains a VGG16-based image classifier.
+https://github.com/deephabiswashi/EpilepticSeizureDetection
 ..............................................................................................
 
 
