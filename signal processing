@@ -6,11 +6,12 @@ Bonn dataset - cwt images - cnn classification
 https://www.mathworks.com/help/wavelet/ug/time-frequency-convolutional-network-for-eeg-data-classification.html
 
 how it works in that example:
-The raw EEG time series are fed into the network as 1-D sequences. 
-A continuous wavelet transform layer (cwtLayer) computes a scalogram (i.e., a time-frequency map). This produces 2D time-frequency maps for each input signal. 
-After the scalogram layer, the network uses 2-D convolution and pooling layers — essentially treating the scalogram outputs like images (because they have time and frequency dimensions). 
+EEG time series are fed into the network as 1-D sequences. 
+A cwtLayer computes a scalogram (2D time-frequency map) for each input signal. 
+After the scalogram layer (cwtLayer), the network uses 2D convolution and pooling layers for treating the scalogram outputs like images (because they have time and frequency dimensions). 
 
-So they don’t save or use external image files, but they do transform the 1-D signal into a 2-D time-frequency representation inside the network that functions similarly to an image for the 2-D convolutional layers.
+So they don’t save or use external image files, but they do transform the 1D signal into a 2D time-frequency representation inside the network that functions similarly to an image for 
+2-D convolutional layers.
 
 .............................................................................................
 
@@ -25,9 +26,6 @@ https://www.kaggle.com/code/mdhamiduddin/notebooke3bb44aaa9/notebook
 
 .............................................................................................
 datasets
-
-(2) UCI dataset: 
-code = (acc 0.98. binary classification) https://github.com/mrpintime/Epileptic-Seizure-Recognition/blob/main/Epileptic_Seizure.ipynb
 
 () Found a good kaggle dataset = https://www.kaggle.com/datasets/datasetengineer/epilepsy-dataset?select=epilepsy_federated_dataset.csv
 
