@@ -1,17 +1,7 @@
 UCI links
 
 ..............................................................................................
-Bonn dataset - cwt images - cnn classification 
 
-https://www.mathworks.com/help/wavelet/ug/time-frequency-convolutional-network-for-eeg-data-classification.html
-
-how it works in that example:
-EEG time series are fed into the network as 1-D sequences. 
-A cwtLayer computes a scalogram (2D time-frequency map) for each input signal. 
-After the scalogram layer (cwtLayer), the network uses 2D convolution and pooling layers for treating the scalogram outputs like images (because they have time and frequency dimensions). 
-
-So they don’t save or use external image files, but they do transform the 1D signal into a 2D time-frequency representation inside the network that functions similarly to an image for 
-2-D convolutional layers.
 
 .............................................................................................
 
