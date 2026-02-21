@@ -1,0 +1,64 @@
+UCI links
+
+..............................................................................................
+Bonn dataset - cwt images - cnn classification 
+
+https://www.mathworks.com/help/wavelet/ug/time-frequency-convolutional-network-for-eeg-data-classification.html
+
+how it works in that example:
+The raw EEG time series are fed into the network as 1-D sequences. 
+A continuous wavelet transform layer (cwtLayer) computes a scalogram (i.e., a time-frequency map). This produces 2D time-frequency maps for each input signal. 
+After the scalogram layer, the network uses 2-D convolution and pooling layers — essentially treating the scalogram outputs like images (because they have time and frequency dimensions). 
+
+So they don’t save or use external image files, but they do transform the 1-D signal into a 2-D time-frequency representation inside the network that functions similarly to an image for the 2-D convolutional layers.
+
+.............................................................................................
+
+dataset and code link.
+dataset = cwt png images of Bonn dataset 
+Code = running cnn on this dataset. acc 90% (maybe they did 5 class classification. not binary. NOT SURE)
+
+data of cwt images = https://www.kaggle.com/datasets/alexreigns14/finaldata
+
+https://www.kaggle.com/code/mdhamiduddin/notebooke3bb44aaa9/notebook
+
+
+.............................................................................................
+datasets
+
+(2) UCI dataset: 
+code = (acc 0.98. binary classification) https://github.com/mrpintime/Epileptic-Seizure-Recognition/blob/main/Epileptic_Seizure.ipynb
+
+() Found a good kaggle dataset = https://www.kaggle.com/datasets/datasetengineer/epilepsy-dataset?select=epilepsy_federated_dataset.csv
+
+() Temple university hospital seizure (TUSZ or TUH) dataset 
+dataset: official dataset link = https://isip.piconepress.com/projects/tuh_eeg/
+         kaggle dataset link = https://www.kaggle.com/datasets/ameyakasetwar/data-1-2-v-0
+code = no acc given = https://www.kaggle.com/code/ameyakasetwar/seizure-detection-using-tuh-eeg-data-transformer/notebook?fbclid=IwY2xjawP-umlleHRuA2FlbQIxMABicmlkETJaRDFaMXNQY01POEkyZU9Vc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHv1VpzmMlepALu3RcDPERUh-MPvv924_UpROaIRqpLGFMKOGRGrjAEsKb2ee_aem_uvqtrqgzV-65AJZRPLNh1g
+       acc 0.57 = https://github.com/ephathaway/tuh-epilepsy/tree/master
+       acc 0.73 = https://github.com/UnitedHolmes/seizure_detection_EEGs_transformer_BHI_2023
+       acc 0.84 (this code transforms eeg to scalogram images which can be useful) = https://github.com/Aura-healthcare/seizure_detector_exploration/blob/master/jedha_bootcamp_december_2020/wavelet_analysis_ECG_model_all_patients.ipynb
+
+
+() Turkish epilepsy EEG dataset OR Kaggle 121 people EEG dataset 
+dataset = https://www.kaggle.com/datasets/buraktaci/turkish-epilepsy
+code = https://www.kaggle.com/code/talhaaaaaaaaaaaa/dataset-g-rme (did NOT find any other code. only found this code. and this code is probably NOT doing classification task. dataset's each files are in .mat extension. dataset size 17 GB. I think at first u should make code and work with 5 seizure & non-seizure .mat files. if the code works then u download the full dataset)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
