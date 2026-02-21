@@ -7,7 +7,9 @@ UCI links
 
 dataset and code link.
 dataset = cwt png images of Bonn dataset 
-Code = running cnn on this dataset. acc 90% (maybe they did 5 class classification. not binary. NOT SURE)
+Code = running cnn on this dataset. acc 90% 
+(maybe they did 5 class classification. not binary. NOT SURE)
+they did NOT give code for converting eeg to image. their dataset was cwt png images of Bonn dataset. they just used that dataset. 
 
 data of cwt images = https://www.kaggle.com/datasets/alexreigns14/finaldata
 
