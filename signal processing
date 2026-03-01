@@ -1,1 +1,22 @@
+Siena 
+dataset (edf format) = https://physionet.org/content/siena-scalp-eeg/1.0.0/https://zenodo.org/records/10640762
 
+code = https://www.kaggle.com/code/adhiiiilol/seizure-detection-using-random-forest
+input: edf
+out : csv 
+acc: 0.98
+
+code = https://www.kaggle.com/code/abhishekinnvonix/epilepsy-detection-using-ml-seina-scalp-eeg-data
+input: edf
+out : not image 
+acc: 0.99
+
+code = https://github.com/soinikghosh9/GenEEG
+input: edf
+out : not image 
+acc: 0.84
+
+code = https://www.kaggle.com/code/saurishs/00-simple-reproduction-labram
+input: edf
+out : not image
+acc: dont know
