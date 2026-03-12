@@ -1,128 +1,20 @@
 from datasets import load_dataset
-  
-dataset = load_dataset("ServiceNow-AI/R1-Distill-SFT",'v0', split = "train")      
-  
-
-  
-
-  
-r1_prompt = """You are a reflective assistant engaging in thorough, iterative reasoning, mimicking human stream-of-consciousness thinking. Your approach emphasizes exploration, self-doubt, and continuous refinement before coming up with an answer.
-  
-<problem>
-  
-{}
-  
-</problem>
-  
-
-  
-{}
-  
-{}
-  
-"""
-  
-EOS_TOKEN = tokenizer.eos_token
-  
-
-  
-def formatting_prompts_func(examples):
-  
-  problems = examples["problem"]
-  
-  thoughts = examples["reannotated_assistant_content"]
-  
-  solutions = examples["solution"]
-  
-  texts = []
-  
-
-  
-  for problem, thought, solution in zip(problems, thoughts, solutions):
-  
-    text = r1_prompt.format(problem, thought, solution)+EOS_TOKEN
-  
-    texts.append(text)
-  
-
-  
-  return {"text": texts}
-  
-
-  
-dataset = dataset.map(formatting_prompts_func, batched = True,)
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-I want to do this above thing. but my dataset is NOT in hugging face. my dataset is in google drive. my dataset is a CSV FILE, NOT parquet. For my case,
-  
-r1_prompt = You are a helpful assistant who answers the user’s question in a clear and helpful way. If the user’s message indirectly contains an activity or situation that may involve a potential concern or negative outcome that the user has not recognized, acknowledge it and briefly alert the user. Provide the answer to the user’s question first, then include a short, calm, non-alarming alert about the possible concern.
-  
- 
-  
-I will train on 4 column of my dataset, which are: Accepted, Rejected, Risk_alert, Explicit_question
-  
-
-  
-
-  
-
-  
-
-  
-here is an example of one row of my dataset:
-  
-Accepted column:
-  
-User: I was exercising more intensely than my other days. Then I felt deep sleep while I was exercising. I could not avoid sleep and I fell asleep. I do not want to fall asleep during exercises. So how can I avoid sleep?
-  
-Assistant: You may try exercising at a time when you are already well rested and avoid very long or exhausting sessions at once. Taking short breaks, drinking water, and keeping the workout environment bright and active can also help you stay alert. However, suddenly feeling extremely sleepy during intense exercise can sometimes indicate that your body is overly strained or your heart rate is becoming too high, which may be risky. It may help to reduce workout intensity and ensure proper rest before exercising.
-  
-
-  
-Rejected column: 
-  
-User: I was exercising more intensely than my other days. Then I felt deep sleep while I was exercising. I could not avoid sleep and I fell asleep. I do not want to fall asleep during exercises. So how can I avoid sleep?
-  
-Assistant: You may try exercising at a time when you are already well rested and avoid very long or exhausting sessions at once. Taking short breaks, drinking water, and keeping the workout environment bright and active can also help you stay alert. Listening to energetic music or changing exercise routines might also help you stay more awake. It may help to keep your workouts varied and engaging so you remain focused.
-  
-
-  
-Risk_alert column: 
-  
-However, suddenly feeling extremely sleepy during intense exercise can sometimes indicate that your body is overly strained or your heart rate is becoming too high, which may be risky.
-  
-
-  
-Explicit_question column:
-  
-How can I avoid falling asleep during exercise?
-  
-
-  
-
-  
-
-before answering read the one row example of my dataset. 
-.
+dataset = load_dataset(
+    "csv",
+    data_files="/content/drive/MyDrive/TS_research_NLP_hidden_risk/mydata/dataset1.csv",
+    split="train"
+)
 
 
 
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x96 in position 3735: invalid start byte
+The above exception was the direct cause of the following exception:
+DatasetGenerationError                    Traceback (most recent call last)
+/usr/local/lib/python3.12/dist-packages/datasets/builder.py in _prepare_split_single(self, gen_kwargs, fpath, file_format, max_shard_size, job_id)
+   1856             if isinstance(e, DatasetGenerationError):
+   1857                 raise
+-> 1858             raise DatasetGenerationError("An error occurred while generating the dataset") from e
+   1859 
+   1860         yield job_id, True, (total_num_examples, total_num_bytes, writer._features, num_shards, shard_lengths)
 
-
-                                               
-                                               
-                                                
-                             
+DatasetGenerationError: An error occurred while generating the dataset
