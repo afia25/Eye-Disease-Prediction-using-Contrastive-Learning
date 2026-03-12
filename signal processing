@@ -1,1 +1,10 @@
 
+  
+
+  for problem, thought, solution in zip(problems, thoughts, solutions):
+    text = r1_prompt.format(problem, thought, solution)+EOS_TOKEN
+    texts.append(text)
+  
+  return {"text": texts}
+  
+dataset = dataset.map(formatting_prompts_func, batched = True,)
