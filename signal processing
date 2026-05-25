@@ -1,9 +1,63 @@
-I got this output:
+def grad_cam(model, img,
+             layer_name="block5_conv3", label_name=None,
+             category_id=None):
+    """Get a heatmap by Grad-CAM.
+    Args:
+        model: A model object, build from tf.keras 2.X.
+        img: An image ndarray.
+        layer_name: A string, layer name in model.
+        label_name: A list or None,
+            show the label name by assign this argument,
+            it should be a list of all label names.
+        category_id: An integer, index of the class.
+            Default is the category with the highest score in the prediction.
+    Return:
+        A heatmap ndarray(without color).
+    """
+    img_tensor = np.expand_dims(img, axis=0)
 
-device: cpu
-layer Name to plot heatmap: Conv_1
-img: /content/drive/MyDrive/XAI/Ablation-CAM/assests/n01669191_46.JPEG
-Predict label: 37
+    conv_layer = model.get_layer(layer_name)
+    heatmap_model = Model([model.inputs], [conv_layer.output, model.output])
+
+    with tf.GradientTape() as gtape:
+        conv_output, predictions = heatmap_model(img_tensor)
+
+        # unwrap if model returns list
+        if isinstance(predictions, list):
+            predictions = predictions[0]
+
+        if category_id is None:
+            category_id = np.argmax(predictions[0])
+
+        if label_name is not None:
+            print(label_name[category_id])
+
+        print(type(predictions))
+        print(len(predictions))
+        output = predictions[:, category_id]
+        grads = gtape.gradient(output, conv_output)
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+    heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_output), axis=-1)
+    heatmap = np.maximum(heatmap, 0)
+    max_heat = np.max(heatmap)
+    if max_heat == 0:
+        max_heat = 1e-10
+    heatmap /= max_heat
+
+    return np.squeeze(heatmap)
 
 
-I did NOT get any output of ablation  CAM heatmap image.
+
+
+
+heatmap = grad_cam(model, img,
+                   label_name = ['WRIST', 'ELBOW', 'SHOULDER'],
+                   #category_id = 0,
+                   )
+show_imgwithheat(img_path, heatmap)
+
+
+
+u have to make code of 'LayerCAM in tensorflow'.
+I have given 'gradCAM tensorflow code' in the above. u can take help from that code. 
