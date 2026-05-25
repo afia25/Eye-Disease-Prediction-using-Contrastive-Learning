@@ -25,10 +25,10 @@ def grad_cam(model, img,
             category_id = np.argmax(predictions[0])
         if label_name is not None:
             print(label_name[category_id])
-
-        output = predictions[:, category_id]   
+        
         print(type(predictions))
         print(len(predictions))
+        output = predictions[:, category_id]   
         grads = gtape.gradient(output, conv_output)
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
@@ -40,6 +40,7 @@ def grad_cam(model, img,
     heatmap /= max_heat
 
     return np.squeeze(heatmap)
+
 
 
 heatmap = grad_cam(model, img,
@@ -58,21 +59,16 @@ heatmap = grad_cam(model, img,
 
 OUTPUT IS:
 ELBOW
+<class 'list'>
+1
 ---------------------------------------------------------------------------
 TypeError                                 Traceback (most recent call last)
-/tmp/ipykernel_7796/3561892576.py in <cell line: 0>()
-      1 # result of grad cam
-----> 2 heatmap = grad_cam(model, img,
-      3                    label_name = ['WRIST', 'ELBOW', 'SHOULDER'],
-      4                    #category_id = 0,
-      5                    )
-
-/tmp/ipykernel_7796/4084146957.py in grad_cam(model, img, layer_name, label_name, category_id)
-     29             print(label_name[category_id])
-     30 
+/tmp/ipykernel_7796/1717452257.py in grad_cam(model, img, layer_name, label_name, category_id)
+     29         print(type(predictions))
+     30         print(len(predictions))
 ---> 31         output = predictions[:, category_id]
-     32         print(type(predictions))
-     33         print(len(predictions))
+     32         grads = gtape.gradient(output, conv_output)
+     33         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
 TypeError: list indices must be integers or slices, not tuple
 
