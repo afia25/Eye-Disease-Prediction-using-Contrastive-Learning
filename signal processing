@@ -1,1 +1,62 @@
+def grad_cam(model, img,
+             layer_name="block5_conv3", label_name=None,
+             category_id=None):
+    """Get a heatmap by Grad-CAM.
 
+    Args:
+        model: A model object, build from tf.keras 2.X.
+        img: An image ndarray.
+        layer_name: A string, layer name in model.
+        label_name: A list or None,
+            show the label name by assign this argument,
+            it should be a list of all label names.
+        category_id: An integer, index of the class.
+            Default is the category with the highest score in the prediction.
+
+    Return:
+        A heatmap ndarray(without color).
+    """
+    img_tensor = np.expand_dims(img, axis=0)
+
+    conv_layer = model.get_layer(layer_name)
+    heatmap_model = Model([model.inputs], [conv_layer.output, model.output])
+
+    with tf.GradientTape() as gtape:
+        conv_output, predictions = heatmap_model(img_tensor)
+        if category_id is None:
+            category_id = np.argmax(predictions[0])
+        if label_name is not None:
+            print(label_name[category_id])
+        output = predictions[:, category_id]
+        grads = gtape.gradient(output, conv_output)
+        pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+    heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_output), axis=-1)
+    heatmap = np.maximum(heatmap, 0)
+    max_heat = np.max(heatmap)
+    if max_heat == 0:
+        max_heat = 1e-10
+    heatmap /= max_heat
+
+    return np.squeeze(heatmap)
+
+
+heatmap = grad_cam(model, img,
+                   label_name = ['WRIST', 'ELBOW', 'SHOULDER'],
+                   #category_id = 0,
+                   )
+
+
+
+
+
+
+
+TypeError:
+if label_name is not None:
+     29             print(label_name[category_id])
+---> 30         output = predictions[:, category_id]
+     31         grads = gtape.gradient(output, conv_output)
+     32         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+TypeError: list indices must be integers or slices, not tuple
