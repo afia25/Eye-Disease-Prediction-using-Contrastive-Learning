@@ -52,6 +52,10 @@ heatmap = grad_cam(model, img,
 
 
 
+
+
+
+THIS ERROR IS OCCURING. WHAT SHOULD I DO?
 TypeError:
 if label_name is not None:
      29             print(label_name[category_id])
@@ -60,3 +64,5 @@ if label_name is not None:
      32         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
 TypeError: list indices must be integers or slices, not tuple
+
+
