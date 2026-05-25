@@ -2,7 +2,6 @@ def grad_cam(model, img,
              layer_name="block5_conv3", label_name=None,
              category_id=None):
     """Get a heatmap by Grad-CAM.
-
     Args:
         model: A model object, build from tf.keras 2.X.
         img: An image ndarray.
@@ -12,7 +11,6 @@ def grad_cam(model, img,
             it should be a list of all label names.
         category_id: An integer, index of the class.
             Default is the category with the highest score in the prediction.
-
     Return:
         A heatmap ndarray(without color).
     """
@@ -27,7 +25,10 @@ def grad_cam(model, img,
             category_id = np.argmax(predictions[0])
         if label_name is not None:
             print(label_name[category_id])
-        output = predictions[:, category_id]
+
+        output = predictions[:, category_id]   
+        print(type(predictions))
+        print(len(predictions))
         grads = gtape.gradient(output, conv_output)
         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
 
@@ -55,14 +56,25 @@ heatmap = grad_cam(model, img,
 
 
 
-THIS ERROR IS OCCURING. WHAT SHOULD I DO?
-TypeError:
-if label_name is not None:
+OUTPUT IS:
+ELBOW
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+/tmp/ipykernel_7796/3561892576.py in <cell line: 0>()
+      1 # result of grad cam
+----> 2 heatmap = grad_cam(model, img,
+      3                    label_name = ['WRIST', 'ELBOW', 'SHOULDER'],
+      4                    #category_id = 0,
+      5                    )
+
+/tmp/ipykernel_7796/4084146957.py in grad_cam(model, img, layer_name, label_name, category_id)
      29             print(label_name[category_id])
----> 30         output = predictions[:, category_id]
-     31         grads = gtape.gradient(output, conv_output)
-     32         pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+     30 
+---> 31         output = predictions[:, category_id]
+     32         print(type(predictions))
+     33         print(len(predictions))
 
 TypeError: list indices must be integers or slices, not tuple
 
+THIS ERROR IS OCCURING. WHAT SHOULD I DO?
 
