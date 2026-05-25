@@ -61,3 +61,19 @@ show_imgwithheat(img_path, heatmap)
 
 u have to make code of 'LayerCAM in tensorflow'.
 I have given 'gradCAM tensorflow code' in the above. u can take help from that code. 
+
+
+
+
+
+
+
+
+grads = gtape.gradient(output, conv_output)
+pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+
+heatmap = tf.reduce_mean(tf.multiply(pooled_grads, conv_output), axis=-1)
+heatmap = np.maximum(heatmap, 0)
+
+these lines r from 'gradCAM tensorflow code'. u have NOT used these lines in your layercam code.
+is NOT using these lines in your layercam code correct?
