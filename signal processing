@@ -1,90 +1,96 @@
-def grad_cam_plus(model, img,
-                  layer_name="block5_conv3", label_name=None,
-                  category_id=None):
-    """Get a heatmap by Grad-CAM++.
-    Args:
-        model: A model object, build from tf.keras 2.X.
-        img: An image ndarray.
-        layer_name: A string, layer name in model.
-        label_name: A list or None,
-            show the label name by assign this argument,
-            it should be a list of all label names.
-        category_id: An integer, index of the class.
-            Default is the category with the highest score in the prediction.
-    Return:
-        A heatmap ndarray(without color).
-    """
-    img_tensor = np.expand_dims(img, axis=0)
-    conv_layer = model.get_layer(layer_name)
-    heatmap_model = Model([model.inputs], [conv_layer.output, model.output])
+def get_arg():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-m', help='tensorflow model path (keras saved model folder)')
+    parser.add_argument('-d', default='cpu', help='device ("cpu" or "cuda")')
+    parser.add_argument('-img', help='img path')
+    parser.add_argument('-layer', help='layer name to plot heatmap')
+    parser.add_argument('-speedup', 
+                        action='store_true', 
+                        help=('"speedup" will increase the speed of plotting heatmap '
+                              'dramatically, however, speedup will '
+                              'be memory-expensive, so it is the trade-off'))
+    return parser.parse_known_args()[0]
+    
 
-    with tf.GradientTape() as gtape1:
-        with tf.GradientTape() as gtape2:
-            with tf.GradientTape() as gtape3:
-                conv_output, predictions = heatmap_model(img_tensor)
-                if category_id is None:
-                    category_id = np.argmax(predictions[0])
-                if label_name is not None:
-                    print(label_name[category_id])
+def main():
+    arg = get_arg()
 
-                print(type(predictions))
-                print(len(predictions))
-                output = predictions[:, category_id]
-                conv_first_grad = gtape3.gradient(output, conv_output)
-            conv_second_grad = gtape2.gradient(conv_first_grad, conv_output)
-        conv_third_grad = gtape1.gradient(conv_second_grad, conv_output)
-
-    global_sum = np.sum(conv_output, axis=(0, 1, 2))
-
-    alpha_num = conv_second_grad[0]
-    alpha_denom = conv_second_grad[0]*2.0 + conv_third_grad[0]*global_sum
-    alpha_denom = np.where(alpha_denom != 0.0, alpha_denom, 1e-10)
-
-    alphas = alpha_num/alpha_denom
-    alpha_normalization_constant = np.sum(alphas, axis=(0,1))
-    alphas /= alpha_normalization_constant
-
-    weights = np.maximum(conv_first_grad[0], 0.0)
-
-    deep_linearization_weights = np.sum(weights*alphas, axis=(0,1))
-    grad_cam_map = np.sum(deep_linearization_weights*conv_output[0], axis=2)
-
-    heatmap = np.maximum(grad_cam_map, 0)
-    max_heat = np.max(heatmap)
-    if max_heat == 0:
-        max_heat = 1e-10
-    heatmap /= max_heat
-
-    return heatmap
+    preprocess = tf.keras.Sequential([
+        tf.keras.layers.Resizing(224, 224),
+        tf.keras.layers.Rescaling(1 / 127.5, -1),
+    ])
+   
+    device = arg.d
+    if device == 'cuda' and len(tf.config.list_physical_devices('GPU')) == 0:
+        raise ValueError('There is no cuda !!!')
+    
+    if arg.m is None:
+        model = tf.keras.applications.MobileNetV2(classifier_activation=None)
+    else:
+        model = tf.keras.models.load_model(arg.m)
+        
+    cam_obj = AblationCAM(model, arg.d, preprocess, arg.layer)
+    
+    print('\ndevice:', arg.d)
+    print('layer Name to plot heatmap:', cam_obj.layer_name)
+    print('img:', arg.img)
+    
+    img = np.array(Image.open(arg.img).convert('RGB'))
+    # output is tf Tensor, overlay is ndarray
+    output, overlay = cam_obj.get_heatmap(img, arg.speedup)
+    print('\nPredict label:', np.argmax(output, 1).item())
+    
+    Image.fromarray(overlay).show()
 
 
 
 
-heatmap_plus = grad_cam_plus(model, img)
-show_imgwithheat(img_path, heatmap_plus)
+
+if __name__ == "__main__":
+    main()
 
 
 
 
+Error on this line :     cam_obj = AblationCAM(model, arg.d, preprocess, arg.layer)
+
+ValueError                                Traceback (most recent call last)
+
+2 frames
+/tmp/ipykernel_3388/2590313676.py in __init__(self, model, device, preprocess, layer_name)
+     10 
+     11         if layer_name is None:
+---> 12             raise ValueError('You should specify layer name !!!')
+     13         else:
+     14             try:
+ValueError: You should specify layer name !!!
 
 
 
 
 
 
-OUTPUT IS:
-<class 'list'>
-1
----------------------------------------------------------------------------
-TypeError                                 Traceback (most recent call last)
-/tmp/ipykernel_7796/1593695925.py in grad_cam_plus(model, img, layer_name, label_name, category_id)
-     81                 print(type(predictions))
-     82                 print(len(predictions))
----> 83                 output = predictions[:, category_id]
-     84                 conv_first_grad = gtape3.gradient(output, conv_output)
-     85             conv_second_grad = gtape2.gradient(conv_first_grad, conv_output)
 
-TypeError: list indices must be integers or slices, not tuple
 
-THIS ERROR IS OCCURING. WHAT SHOULD I DO?
 
+
+LIKE THIS WAY?
+
+ class Args:
+    m = None
+    d = 'cpu'
+    img = '/content/drive/MyDrive/XAI/Ablation-CAM/assests/n01669191_46.JPEG'
+    layer = 'Conv_1'
+    speedup = True
+
+
+def main():
+    arg = Args()
+
+    preprocess = tf.keras.Sequential([
+        tf.keras.layers.Resizing(224, 224),
+        tf.keras.layers.Rescaling(1 / 127.5, -1),
+    ])
+
+...........................
+...........................
